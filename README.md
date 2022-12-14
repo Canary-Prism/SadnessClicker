@@ -19,3 +19,8 @@ I'm assuming you know how to use GitHub. If not then here:
 
 ### 1.0
 * Made, well, the entire thing 
+### 1.1
+* It now autosaves the time every second, but only the clicks when it gets reset
+* otherwise you can just press save manually
+* Except the save button only works 70% of the time lol
+* changelogLabel will now rezise according to frame size, its text also aligns to top now
