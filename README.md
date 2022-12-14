@@ -28,3 +28,8 @@ This program uses Java, so you need to have jre installed. Look it up and instal
 * otherwise you can just press save manually
 * Except the save button only works 70% of the time lol
 * changelogLabel will now rezise according to frame size, its text also aligns to top now
+### 1.2
+* Save button now randomly jumps to an alternate location
+* Manual saving now costs 1 click point, but rarely 100
+* The Click button also randomly moves in a direction sometimes
+* if it moves out of bounds it will be put back in its original location
