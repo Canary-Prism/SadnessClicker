@@ -14,7 +14,7 @@ I'm assuming you know how to use GitHub. If not then here:
 3. Find "Assets" Section
 4. Click the "SadnessClickerx.y.z.jar" file
 
-###Notice
+### Notice
 
 This program uses Java, so you need to have jre installed. Look it up and install it if you don't have it
 
