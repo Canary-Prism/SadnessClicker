@@ -33,3 +33,5 @@ This program uses Java, so you need to have jre installed. Look it up and instal
 * Manual saving now costs 1 click point, but rarely 100
 * The Click button also randomly moves in a direction sometimes
 * if it moves out of bounds it will be put back in its original location
+### 1.3
+* now the buttons respond if and ONLY IF you left click on them
