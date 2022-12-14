@@ -10,6 +10,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.awt.event.ComponentListener;
+import java.awt.event.ComponentEvent;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -22,13 +24,17 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
-public class Main implements WindowListener, ActionListener, MouseListener {
+public class Main implements WindowListener, ActionListener, MouseListener, ComponentListener {
 
-    public static final String VERSION = "1.0";
+    public static final String VERSION = "1.1";
     public static final String[] CHANGELOG = {
-        "Made, well, the entire thing"
+        "It now autosaves the time every second, but only the clicks when it gets reset", 
+        "otherwise you can just press save manually", 
+        "Except the save button only works 70% of the time lol", 
+        "changelogLabel will now rezise according to frame size, its text also aligns to top now"
     };
 
 
@@ -36,6 +42,7 @@ public class Main implements WindowListener, ActionListener, MouseListener {
 
     private String workingDirectory;
 
+    private volatile long fileClicks;
 
     private volatile long clicks;
     private long timeElapsed;
@@ -77,6 +84,7 @@ public class Main implements WindowListener, ActionListener, MouseListener {
                 FileReader fr = new FileReader(file);
                 char[] rawdata = new char[40];
                 fr.read(rawdata);
+                fr.close();
                 String[] data = new String(rawdata).split(",");
                 try {
                     clicks = Long.parseLong(data[0]);
@@ -85,6 +93,7 @@ public class Main implements WindowListener, ActionListener, MouseListener {
                 } catch (NumberFormatException e) {
                     clicks = 0;
                 }
+                fileClicks = clicks;
                 try {
                     timeElapsed = Long.parseLong(data[1]);
                 } catch (IndexOutOfBoundsException e) {
@@ -101,9 +110,19 @@ public class Main implements WindowListener, ActionListener, MouseListener {
     }
 
     private void save() {
+        save(true);
+    }
+
+    private void save(boolean includeClicks) {
         try (FileWriter fw = new FileWriter(file)) {
-            fw.write(clicks + "," + timeElapsed + ",");
-            fw.close();
+            if (includeClicks) {
+                fw.write(clicks + "," + timeElapsed + ",");
+                fw.close();
+                fileClicks = clicks;
+            } else {
+                fw.write(fileClicks + "," + timeElapsed + ",");
+                fw.close();
+            }
         } catch (IOException e) {
             JOptionPane.showMessageDialog(null, "Cannot Access Save Data", "sadness", JOptionPane.ERROR_MESSAGE);
             System.exit(-1);
@@ -116,6 +135,7 @@ public class Main implements WindowListener, ActionListener, MouseListener {
     private JButton clickButton = new JButton("Click");
     private JButton wrongButton = new JButton();
     private JLabel wrongLabel = new JLabel("Hello :D");
+    private JButton saveButton = new JButton("Save your precious progress");
 
     private JButton aboutButton = new JButton("about");
 
@@ -126,6 +146,7 @@ public class Main implements WindowListener, ActionListener, MouseListener {
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         frame.addWindowListener(this);
         frame.setResizable(false);
+        frame.addComponentListener(this);
 
         clicksLabel.setBounds(30, 100, 1000, 30);
         timeLabel.setBounds(30, 130, 1000, 30);
@@ -134,6 +155,7 @@ public class Main implements WindowListener, ActionListener, MouseListener {
         clickButton.addMouseListener(this);
         wrongButton.addActionListener(this);
         aboutButton.addActionListener(this);
+        saveButton.addActionListener(this);
 
         wrongButton.setOpaque(false);
         wrongButton.setContentAreaFilled(false);
@@ -143,6 +165,8 @@ public class Main implements WindowListener, ActionListener, MouseListener {
         clickButton.setBounds(225, 225, 50, 50);
         wrongButton.setBounds(-10, -10, 520, 520);
         wrongLabel.setBounds(50, 275, 1000, 100);
+
+        saveButton.setBounds(280, 30, 220, 30);
         
         aboutButton.setBounds(380, 400, 100, 30);
 
@@ -161,6 +185,7 @@ public class Main implements WindowListener, ActionListener, MouseListener {
         temp += "</html>";
 
         changelogLabel.setText(temp);
+        changelogLabel.setVerticalAlignment(SwingConstants.TOP);
         changelogLabel.setBounds(0, 0, 400, Main.CHANGELOG.length * 40 + 50);
 
 
@@ -174,6 +199,7 @@ public class Main implements WindowListener, ActionListener, MouseListener {
                     String.valueOf(TimeUnit.SECONDS.toMinutes(timeElapsed) - (TimeUnit.SECONDS.toHours(timeElapsed)* 60)) + ":" +
                     String.valueOf(TimeUnit.SECONDS.toSeconds(timeElapsed) - (TimeUnit.SECONDS.toMinutes(timeElapsed) *60))
                 );
+                save(false);
             }
         };
 
@@ -188,6 +214,8 @@ public class Main implements WindowListener, ActionListener, MouseListener {
         frame.setSize(500, 500);
 
         frame.getContentPane().add(aboutButton);
+
+        frame.getContentPane().add(saveButton);
         
         frame.getContentPane().add(clicksLabel);
         frame.getContentPane().add(timeLabel);
@@ -259,6 +287,10 @@ public class Main implements WindowListener, ActionListener, MouseListener {
             frame.setResizable(true);
             showChangelog();
         }
+        if (e.getSource() == saveButton)  {
+            if (Math.random() > 0.3)
+                save();
+        }
     }
 
     @Override
@@ -275,7 +307,7 @@ public class Main implements WindowListener, ActionListener, MouseListener {
     @Override
     public void windowClosing(WindowEvent e) {
         frame.dispose();
-        save();
+        save(false);
         JOptionPane.showMessageDialog(null, "Until next time ;D");
         System.exit(0);
     }
@@ -318,5 +350,25 @@ public class Main implements WindowListener, ActionListener, MouseListener {
 
     @Override
     public void mouseExited(MouseEvent e) {        
+    }
+
+    @Override
+    public void componentResized(ComponentEvent e) {
+        changelogLabel.setBounds(0, 0, e.getComponent().getWidth() - 20, e.getComponent().getHeight() - 20); 
+    }
+
+    @Override
+    public void componentMoved(ComponentEvent e) {
+        
+    }
+
+    @Override
+    public void componentShown(ComponentEvent e) {
+        
+    }
+
+    @Override
+    public void componentHidden(ComponentEvent e) {
+        
     }
 }
