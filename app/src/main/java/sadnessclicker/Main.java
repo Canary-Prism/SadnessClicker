@@ -4,8 +4,6 @@
 package sadnessclicker;
 
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
@@ -29,12 +27,9 @@ import javax.swing.SwingUtilities;
 
 public class Main implements WindowListener, MouseListener, ComponentListener {
 
-    public static final String VERSION = "1.2";
+    public static final String VERSION = "1.3";
     public static final String[] CHANGELOG = {
-        "Save button now randomly jumps to an alternate location",
-        "Manual saving now costs 1 click point, but rarely 100",
-        "The Click button also randomly moves in a direction sometimes",
-        "if it moves out of bounds it will be put back in its original location"
+        "now the buttons respond if and ONLY IF you left click on them"
     };
 
 
@@ -265,7 +260,7 @@ public class Main implements WindowListener, MouseListener, ComponentListener {
 
     @Override
     public void mousePressed(MouseEvent e) {
-        if (!SwingUtilities.isLeftMouseButton(e)) {
+        if (!SwingUtilities.isLeftMouseButton(e) && (e.getSource() == clickButton || e.getSource() == aboutButton)) {
             clicks = 0;
             clicksLabel.setText("Number of clicks: 0 :O");
             wrongLabel.setText("<html><h2>Welp. your clicks are now reset</h2><br />at least you learned something<br />next time remember not to right click ;D</html>");
