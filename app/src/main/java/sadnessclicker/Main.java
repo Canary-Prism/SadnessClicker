@@ -29,12 +29,12 @@ import javax.swing.SwingUtilities;
 
 public class Main implements WindowListener, ActionListener, MouseListener, ComponentListener {
 
-    public static final String VERSION = "1.1";
+    public static final String VERSION = "1.2";
     public static final String[] CHANGELOG = {
-        "It now autosaves the time every second, but only the clicks when it gets reset", 
-        "otherwise you can just press save manually", 
-        "Except the save button only works 70% of the time lol", 
-        "changelogLabel will now rezise according to frame size, its text also aligns to top now"
+        "Save button now randomly jumps to an alternate location",
+        "Manual saving now costs 1 click point, but rarely 100",
+        "The Click button also randomly moves in a direction sometimes",
+        "if it moves out of bounds it will be put back in its original location"
     };
 
 
@@ -270,6 +270,19 @@ public class Main implements WindowListener, ActionListener, MouseListener, Comp
             clicks++;        
             clicksLabel.setText("Number of clicks: " + clicks);
             wrongLabel.setText("good job");
+
+            switch ((int)(Math.random() * 10)) {
+                case 0 -> 
+                    clickButton.setLocation(clickButton.getX() + (int)(Math.random() * 15), clickButton.getY());
+                case 1 -> 
+                    clickButton.setLocation(clickButton.getX() - (int)(Math.random() * 15), clickButton.getY());
+                case 2 -> 
+                    clickButton.setLocation(clickButton.getX(), clickButton.getY() + (int)(Math.random() * 15));
+                case 3 -> 
+                    clickButton.setLocation(clickButton.getX(), clickButton.getY() - (int)(Math.random() * 15));
+            }
+            if (clickButton.getX() + 50 < 0 || clickButton.getX() > 500 || clickButton.getY() + 50 < 0 || clickButton.getY() > 500)
+                clickButton.setLocation(225, 225);
         }
         if (e.getSource() == wrongButton) {
             clicks = 0;
@@ -288,6 +301,18 @@ public class Main implements WindowListener, ActionListener, MouseListener, Comp
             showChangelog();
         }
         if (e.getSource() == saveButton)  {
+            if (Math.random() > 0.3)
+                saveButton.setBounds(280, 30, 220, 30);
+            else
+                saveButton.setBounds(20, 30, 220, 30);
+            if (Math.random() > 0.001) {
+                wrongLabel.setText("<html><h1>Saving...</h1> or not...<br />it cost 1 click point!</html>");
+                clicks = (clicks > 1)? clicks - 1 : clicks;
+            } else {
+                wrongLabel.setText("<html><h1>Saving...</h1> or not...<br />it cost <b>100</b> click points!<br />Lucky!!</html>");
+                clicks = (clicks > 100)? clicks - 100 : 0;
+            }
+            clicksLabel.setText("Number of clicks: " + clicks);
             if (Math.random() > 0.3)
                 save();
         }
