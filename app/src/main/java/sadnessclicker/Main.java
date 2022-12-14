@@ -27,7 +27,7 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
-public class Main implements WindowListener, ActionListener, MouseListener, ComponentListener {
+public class Main implements WindowListener, MouseListener, ComponentListener {
 
     public static final String VERSION = "1.2";
     public static final String[] CHANGELOG = {
@@ -151,11 +151,10 @@ public class Main implements WindowListener, ActionListener, MouseListener, Comp
         clicksLabel.setBounds(30, 100, 1000, 30);
         timeLabel.setBounds(30, 130, 1000, 30);
 
-        clickButton.addActionListener(this);
         clickButton.addMouseListener(this);
-        wrongButton.addActionListener(this);
-        aboutButton.addActionListener(this);
-        saveButton.addActionListener(this);
+        wrongButton.addMouseListener(this);
+        aboutButton.addMouseListener(this);
+        saveButton.addMouseListener(this);
 
         wrongButton.setOpaque(false);
         wrongButton.setContentAreaFilled(false);
@@ -172,8 +171,8 @@ public class Main implements WindowListener, ActionListener, MouseListener, Comp
 
         aboutLabel.setBounds(30, 30, 400, 200);
 
-        changelogButton.addActionListener(this);
-        backButton.addActionListener(this);
+        changelogButton.addMouseListener(this);
+        backButton.addMouseListener(this);
 
         changelogButton.setBounds(20, 230, 100, 30);
         versionLabel.setBounds(120, 230, 100, 30);
@@ -265,7 +264,14 @@ public class Main implements WindowListener, ActionListener, MouseListener, Comp
     }
 
     @Override
-    public void actionPerformed(ActionEvent e) {
+    public void mousePressed(MouseEvent e) {
+        if (!SwingUtilities.isLeftMouseButton(e)) {
+            clicks = 0;
+            clicksLabel.setText("Number of clicks: 0 :O");
+            wrongLabel.setText("<html><h2>Welp. your clicks are now reset</h2><br />at least you learned something<br />next time remember not to right click ;D</html>");
+            save();
+            return;
+        }
         if (e.getSource() == clickButton) {
             clicks++;        
             clicksLabel.setText("Number of clicks: " + clicks);
@@ -316,17 +322,6 @@ public class Main implements WindowListener, ActionListener, MouseListener, Comp
             if (Math.random() > 0.3)
                 save();
         }
-    }
-
-    @Override
-    public void mousePressed(MouseEvent e) {
-        if (!SwingUtilities.isLeftMouseButton(e)) {
-            clicks = 0;
-            clicksLabel.setText("Number of clicks: 0 :O");
-            wrongLabel.setText("<html><h2>Welp. your clicks are now reset</h2><br />at least you learned something<br />next time remember not to right click ;D</html>");
-            save();
-        }
-        
     }
 
     @Override
