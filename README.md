@@ -35,3 +35,4 @@ This program uses Java, so you need to have jre installed. Look it up and instal
 * if it moves out of bounds it will be put back in its original location
 ### 1.3
 * now the buttons respond if and ONLY IF you left click on them
+* It now displays and saves your fails :D

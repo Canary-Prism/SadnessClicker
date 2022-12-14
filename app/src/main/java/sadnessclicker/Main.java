@@ -29,7 +29,8 @@ public class Main implements WindowListener, MouseListener, ComponentListener {
 
     public static final String VERSION = "1.3";
     public static final String[] CHANGELOG = {
-        "now the buttons respond if and ONLY IF you left click on them"
+        "now the buttons respond if and ONLY IF you left click on them",
+        "It now displays and saves your fails :D"
     };
 
 
@@ -41,6 +42,9 @@ public class Main implements WindowListener, MouseListener, ComponentListener {
 
     private volatile long clicks;
     private long timeElapsed;
+
+    private volatile long fails;
+
 
     private JFrame frame = new JFrame("Sadness Clicker");
     private JLabel dud =  new JLabel();
@@ -75,6 +79,7 @@ public class Main implements WindowListener, MouseListener, ComponentListener {
                 file.createNewFile();
                 clicks = 0;
                 timeElapsed = 0;
+                fails = 0;
             } else {
                 FileReader fr = new FileReader(file);
                 char[] rawdata = new char[40];
@@ -96,6 +101,13 @@ public class Main implements WindowListener, MouseListener, ComponentListener {
                 } catch (NumberFormatException e) {
                     timeElapsed = 0;
                 }
+                try {
+                    fails = Long.parseLong(data[1]);
+                } catch (IndexOutOfBoundsException e) {
+                    fails = 0;
+                } catch (NumberFormatException e) {
+                    fails = 0;
+                }
             }
         } catch (IOException e) {
             JOptionPane.showMessageDialog(null, "Cannot Access Save Data", "sadness", JOptionPane.ERROR_MESSAGE);
@@ -111,11 +123,11 @@ public class Main implements WindowListener, MouseListener, ComponentListener {
     private void save(boolean includeClicks) {
         try (FileWriter fw = new FileWriter(file)) {
             if (includeClicks) {
-                fw.write(clicks + "," + timeElapsed + ",");
+                fw.write(clicks + "," + timeElapsed + "," + fails + ",");
                 fw.close();
                 fileClicks = clicks;
             } else {
-                fw.write(fileClicks + "," + timeElapsed + ",");
+                fw.write(fileClicks + "," + timeElapsed + "," + fails + ",");
                 fw.close();
             }
         } catch (IOException e) {
@@ -126,6 +138,7 @@ public class Main implements WindowListener, MouseListener, ComponentListener {
 
     private JLabel clicksLabel;
     private JLabel timeLabel;
+    private JLabel failsLabel;
 
     private JButton clickButton = new JButton("Click");
     private JButton wrongButton = new JButton();
@@ -137,6 +150,7 @@ public class Main implements WindowListener, MouseListener, ComponentListener {
     private void make() {
         clicksLabel = new JLabel("Number of clicks: " + clicks);
         timeLabel = new JLabel("Hold on...");
+        failsLabel = new JLabel("Number of slip-ups: " + fails);
 
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         frame.addWindowListener(this);
@@ -145,6 +159,7 @@ public class Main implements WindowListener, MouseListener, ComponentListener {
 
         clicksLabel.setBounds(30, 100, 1000, 30);
         timeLabel.setBounds(30, 130, 1000, 30);
+        failsLabel.setBounds(30, 160, 1000, 30);
 
         clickButton.addMouseListener(this);
         wrongButton.addMouseListener(this);
@@ -213,6 +228,7 @@ public class Main implements WindowListener, MouseListener, ComponentListener {
         
         frame.getContentPane().add(clicksLabel);
         frame.getContentPane().add(timeLabel);
+        frame.getContentPane().add(failsLabel);
 
         frame.getContentPane().add(wrongLabel);
         frame.getContentPane().add(clickButton);
@@ -262,6 +278,8 @@ public class Main implements WindowListener, MouseListener, ComponentListener {
     public void mousePressed(MouseEvent e) {
         if (!SwingUtilities.isLeftMouseButton(e) && (e.getSource() == clickButton || e.getSource() == aboutButton)) {
             clicks = 0;
+            fails++;
+            failsLabel.setText("Number of slip-ups: " + fails);
             clicksLabel.setText("Number of clicks: 0 :O");
             wrongLabel.setText("<html><h2>Welp. your clicks are now reset</h2><br />at least you learned something<br />next time remember not to right click ;D</html>");
             save();
@@ -287,6 +305,8 @@ public class Main implements WindowListener, MouseListener, ComponentListener {
         }
         if (e.getSource() == wrongButton) {
             clicks = 0;
+            fails++;
+            failsLabel.setText("Number of slip-ups: " + fails);
             clicksLabel.setText("Number of clicks: 0 :O");
             wrongLabel.setText("<html><h2>Welp. your clicks are now reset</h2><br />next time remember to not click here</html>");
             save();
@@ -374,16 +394,13 @@ public class Main implements WindowListener, MouseListener, ComponentListener {
 
     @Override
     public void componentMoved(ComponentEvent e) {
-        
     }
 
     @Override
     public void componentShown(ComponentEvent e) {
-        
     }
 
     @Override
     public void componentHidden(ComponentEvent e) {
-        
     }
 }
