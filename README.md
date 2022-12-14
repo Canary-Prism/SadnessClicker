@@ -1,5 +1,6 @@
 # SadnessClicker
 Causes or worsens your depression, may cause severe rage, non-zero chance of exploded kidneys
+in any case, click the "Click" button and you'll be good :D
 
 ### [Download](https://github.com/Rex-tc/SadnessClicker/releases/)
 
