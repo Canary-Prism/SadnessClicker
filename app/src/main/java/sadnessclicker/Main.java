@@ -27,10 +27,9 @@ import javax.swing.SwingUtilities;
 
 public class Main implements WindowListener, MouseListener, ComponentListener {
 
-    public static final String VERSION = "1.3";
+    public static final String VERSION = "1.3.1";
     public static final String[] CHANGELOG = {
-        "now the buttons respond if and ONLY IF you left click on them",
-        "It now displays and saves your fails :D"
+        "Fixed save button cost comparison error"
     };
 
 
@@ -113,7 +112,6 @@ public class Main implements WindowListener, MouseListener, ComponentListener {
             JOptionPane.showMessageDialog(null, "Cannot Access Save Data", "sadness", JOptionPane.ERROR_MESSAGE);
             System.exit(-1);
         }
-
     }
 
     private void save() {
@@ -328,10 +326,10 @@ public class Main implements WindowListener, MouseListener, ComponentListener {
                 saveButton.setBounds(20, 30, 220, 30);
             if (Math.random() > 0.001) {
                 wrongLabel.setText("<html><h1>Saving...</h1> or not...<br />it cost 1 click point!</html>");
-                clicks = (clicks > 1)? clicks - 1 : clicks;
+                clicks = (clicks >= 1)? clicks - 1 : clicks;
             } else {
                 wrongLabel.setText("<html><h1>Saving...</h1> or not...<br />it cost <b>100</b> click points!<br />Lucky!!</html>");
-                clicks = (clicks > 100)? clicks - 100 : 0;
+                clicks = (clicks >= 100)? clicks - 100 : 0;
             }
             clicksLabel.setText("Number of clicks: " + clicks);
             if (Math.random() > 0.3)
