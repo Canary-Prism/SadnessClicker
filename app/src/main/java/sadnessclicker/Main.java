@@ -29,7 +29,8 @@ public class Main implements WindowListener, MouseListener, ComponentListener {
 
     public static final String VERSION = "1.3.1";
     public static final String[] CHANGELOG = {
-        "Fixed save button cost comparison error"
+        "Fixed save button cost comparison error",
+        "timeElapsed is now volatile"
     };
 
 
@@ -40,7 +41,7 @@ public class Main implements WindowListener, MouseListener, ComponentListener {
     private volatile long fileClicks;
 
     private volatile long clicks;
-    private long timeElapsed;
+    private volatile long timeElapsed;
 
     private volatile long fails;
 

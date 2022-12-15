@@ -36,3 +36,6 @@ This program uses Java, so you need to have jre installed. Look it up and instal
 ### 1.3
 * now the buttons respond if and ONLY IF you left click on them
 * It now displays and saves your fails :D
+## 1.3.1
+* Fixed save button cost comparison error
+* timeElapsed is now volatile
