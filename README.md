@@ -3,7 +3,7 @@ Causes or worsens your depression, may cause severe rage, non-zero chance of exp
 
 in any case, click the "Click" button and you'll be good :D
 
-### [Download](https://github.com/Rex-tc/SadnessClicker/releases/)
+### [Download](https://github.com/Canary-Prism/SadnessClicker/releases/)
 
 I'm assuming you know how to use GitHub. If not then here:
 
