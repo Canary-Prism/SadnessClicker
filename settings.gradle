@@ -8,4 +8,4 @@
  */
 
 rootProject.name = 'SadnessClicker'
-include('app')
+include('SadnessClicker')

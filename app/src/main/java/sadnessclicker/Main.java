@@ -237,7 +237,7 @@ public class Main implements WindowListener, MouseListener, ComponentListener {
         frame.setVisible(true);
     }
 
-    private JLabel aboutLabel = new JLabel("<html><h1>About</h1><br />Hi! i'm Rex_tc<br />This is a pointless little app that I made to cause suffering :D<br />If you're looking for a useful thing, this ain't it mate. In fact, most of my things are pretty useless...<br />However, this is the first thing i made with save data functionality! <b>YAY!<br /></html>");
+    private JLabel aboutLabel = new JLabel("<html><h1>About</h1><br />Hi! i'm Canary<br />This is a pointless little app that I made to cause suffering :D<br />If you're looking for a useful thing, this ain't it mate. In fact, most of my things are pretty useless...<br />However, this is the first thing i made with save data functionality! <b>YAY!<br /></html>");
 
     private JButton changelogButton = new JButton("Changelog");
     private JButton backButton = new JButton("Back");
