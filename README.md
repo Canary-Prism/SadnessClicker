@@ -43,3 +43,6 @@ This program uses Java, you should download and install Java Development Kit (JD
 ## 1.3.1
 * Fixed save button cost comparison error
 * timeElapsed is now volatile
+### 2.0
+* added a new field: HIGH SCORES :D
+* now you can see what score you once got and get depressed :3

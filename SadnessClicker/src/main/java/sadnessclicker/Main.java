@@ -27,10 +27,10 @@ import javax.swing.SwingUtilities;
 
 public class Main implements WindowListener, MouseListener, ComponentListener {
 
-    public static final String VERSION = "1.3.1";
+    public static final String VERSION = "2.0";
     public static final String[] CHANGELOG = {
-        "Fixed save button cost comparison error",
-        "timeElapsed is now volatile"
+        "added a new field: HIGH SCORES :D",
+        "now you can see what score you once got and get depressed :3"
     };
 
 
@@ -44,6 +44,8 @@ public class Main implements WindowListener, MouseListener, ComponentListener {
     private volatile long timeElapsed;
 
     private volatile long fails;
+
+    private volatile long highScore;
 
 
     private JFrame frame = new JFrame("Sadness Clicker");
@@ -82,31 +84,37 @@ public class Main implements WindowListener, MouseListener, ComponentListener {
                 fails = 0;
             } else {
                 FileReader fr = new FileReader(file);
-                char[] rawdata = new char[40];
+                char[] rawdata = new char[80];
                 fr.read(rawdata);
                 fr.close();
                 String[] data = new String(rawdata).split(",");
                 try {
                     clicks = Long.parseLong(data[0]);
-                } catch (IndexOutOfBoundsException e) {
-                    clicks = 0;
-                } catch (NumberFormatException e) {
+                } catch (IndexOutOfBoundsException | NumberFormatException e) {
                     clicks = 0;
                 }
                 fileClicks = clicks;
                 try {
                     timeElapsed = Long.parseLong(data[1]);
-                } catch (IndexOutOfBoundsException e) {
-                    timeElapsed = 0;
-                } catch (NumberFormatException e) {
+                } catch (IndexOutOfBoundsException | NumberFormatException e) {
                     timeElapsed = 0;
                 }
                 try {
-                    fails = Long.parseLong(data[1]);
-                } catch (IndexOutOfBoundsException e) {
+                    fails = Long.parseLong(data[2]);
+                } catch (IndexOutOfBoundsException | NumberFormatException e) {
                     fails = 0;
-                } catch (NumberFormatException e) {
-                    fails = 0;
+                }
+                try {
+                    highScore = Long.parseLong(data[3]);
+                    if (highScore < clicks) {
+                        clicks = 0;
+                        highScore = 0;
+                        fails++;
+                        save();
+                        JOptionPane.showMessageDialog(null, "Save Data tampering detected, score reset to 0 >:D", "hmmm", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                } catch (IndexOutOfBoundsException | NumberFormatException e) {
+                    highScore = 0;
                 }
             }
         } catch (IOException e) {
@@ -122,11 +130,11 @@ public class Main implements WindowListener, MouseListener, ComponentListener {
     private void save(boolean includeClicks) {
         try (FileWriter fw = new FileWriter(file)) {
             if (includeClicks) {
-                fw.write(clicks + "," + timeElapsed + "," + fails + ",");
+                fw.write(clicks + "," + timeElapsed + "," + fails + "," + highScore + ",");
                 fw.close();
                 fileClicks = clicks;
             } else {
-                fw.write(fileClicks + "," + timeElapsed + "," + fails + ",");
+                fw.write(fileClicks + "," + timeElapsed + "," + fails + "," + highScore + ",");
                 fw.close();
             }
         } catch (IOException e) {
@@ -138,6 +146,7 @@ public class Main implements WindowListener, MouseListener, ComponentListener {
     private JLabel clicksLabel;
     private JLabel timeLabel;
     private JLabel failsLabel;
+    private JLabel highLabel;
 
     private JButton clickButton = new JButton("Click");
     private JButton wrongButton = new JButton();
@@ -150,6 +159,7 @@ public class Main implements WindowListener, MouseListener, ComponentListener {
         clicksLabel = new JLabel("Number of clicks: " + clicks);
         timeLabel = new JLabel("Hold on...");
         failsLabel = new JLabel("Number of slip-ups: " + fails);
+        highLabel = new JLabel("High Score: " + highScore);
 
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         frame.addWindowListener(this);
@@ -159,6 +169,7 @@ public class Main implements WindowListener, MouseListener, ComponentListener {
         clicksLabel.setBounds(30, 100, 1000, 30);
         timeLabel.setBounds(30, 130, 1000, 30);
         failsLabel.setBounds(30, 160, 1000, 30);
+        highLabel.setBounds(30, 190, 1000, 30);
 
         clickButton.addMouseListener(this);
         wrongButton.addMouseListener(this);
@@ -228,6 +239,7 @@ public class Main implements WindowListener, MouseListener, ComponentListener {
         frame.getContentPane().add(clicksLabel);
         frame.getContentPane().add(timeLabel);
         frame.getContentPane().add(failsLabel);
+        frame.getContentPane().add(highLabel);
 
         frame.getContentPane().add(wrongLabel);
         frame.getContentPane().add(clickButton);
@@ -237,7 +249,7 @@ public class Main implements WindowListener, MouseListener, ComponentListener {
         frame.setVisible(true);
     }
 
-    private JLabel aboutLabel = new JLabel("<html><h1>About</h1><br />Hi! i'm Canary<br />This is a pointless little app that I made to cause suffering :D<br />If you're looking for a useful thing, this ain't it mate. In fact, most of my things are pretty useless...<br />However, this is the first thing i made with save data functionality! <b>YAY!<br /></html>");
+    private JLabel aboutLabel = new JLabel("<html><h1>About</h1><br />Hi! i'm Canary :3<br />This is a pointless little app that I made to cause suffering :D<br />If you're looking for a useful thing, this ain't it mate. In fact, most of my things are pretty useless...<br />However, this is the first thing i made with save data functionality! <b>YAY!<br /></html>");
 
     private JButton changelogButton = new JButton("Changelog");
     private JButton backButton = new JButton("Back");
@@ -280,12 +292,18 @@ public class Main implements WindowListener, MouseListener, ComponentListener {
             fails++;
             failsLabel.setText("Number of slip-ups: " + fails);
             clicksLabel.setText("Number of clicks: 0 :O");
+            highLabel.setText("High Score: " + highScore + ">:3");
             wrongLabel.setText("<html><h2>Welp. your clicks are now reset</h2><br />at least you learned something<br />next time remember not to right click ;D</html>");
             save();
             return;
         }
         if (e.getSource() == clickButton) {
-            clicks++;        
+            clicks++;
+            highLabel.setText("High Score: " + highScore);
+            if (highScore < clicks) {
+                highScore = clicks;
+                highLabel.setText("High Score: " + highScore + ":D");
+            }
             clicksLabel.setText("Number of clicks: " + clicks);
             wrongLabel.setText("good job");
 
@@ -307,6 +325,7 @@ public class Main implements WindowListener, MouseListener, ComponentListener {
             fails++;
             failsLabel.setText("Number of slip-ups: " + fails);
             clicksLabel.setText("Number of clicks: 0 :O");
+            highLabel.setText("High Score: " + highScore + ">:3");
             wrongLabel.setText("<html><h2>Welp. your clicks are now reset</h2><br />next time remember to not click here</html>");
             save();
         }
