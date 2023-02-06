@@ -4,6 +4,7 @@
 package sadnessclicker;
 
 import java.awt.BorderLayout;
+import java.awt.Image;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
@@ -14,10 +15,12 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -25,27 +28,42 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
+import org.apache.commons.io.FileUtils;
+
+import com.gargoylesoftware.htmlunit.BrowserVersion;
+import com.gargoylesoftware.htmlunit.TextPage;
+import com.gargoylesoftware.htmlunit.UnexpectedPage;
+import com.gargoylesoftware.htmlunit.WebClient;
+
 public class Main implements WindowListener, MouseListener, ComponentListener {
 
-    public static final String VERSION = "2.0";
+    public static final String VERSION = "3.0";
     public static final String[] CHANGELOG = {
-        "added a new field: HIGH SCORES :D",
-        "now you can see what score you once got and get depressed :3"
+        "Added Cats",
+        "Added Elias Inflation :3"
     };
+
+    public static final int ROOM = 20;
 
 
     private File file;
 
     private String workingDirectory;
 
-    private volatile long fileClicks;
+    private volatile double fileClicks;
 
-    private volatile long clicks;
+    private volatile double clicks;
     private volatile long timeElapsed;
 
     private volatile long fails;
 
-    private volatile long highScore;
+    private volatile double highScore;
+
+    private volatile double inflation = 1;
+
+    private volatile int elias = 0;
+
+    private volatile boolean cat_mode = false, elias_mode = false, true_elias_mode = false;
 
 
     private JFrame frame = new JFrame("Sadness Clicker");
@@ -71,8 +89,22 @@ public class Main implements WindowListener, MouseListener, ComponentListener {
         //folder.
         
         file = new File(workingDirectory + "/SadnessClicker");
+        showLoadingWindow();
+        loadCat();
+        loadElias();
         read();
         make();
+    }
+
+    private JLabel loadingLabel = new JLabel("<html><h1>loading...</h1>this should only take a bit...<br />also make sure you're connected to the internet</html>");
+
+    private void showLoadingWindow() {
+        frame.getContentPane().removeAll();
+        loadingLabel.setBounds(Main.ROOM, Main.ROOM, 200, 100);
+        frame.getContentPane().add(loadingLabel);
+
+        frame.setSize(200 + Main.ROOM * 2, 100 + Main.ROOM * 2);
+        frame.setVisible(true);
     }
 
     private void read() {
@@ -89,7 +121,7 @@ public class Main implements WindowListener, MouseListener, ComponentListener {
                 fr.close();
                 String[] data = new String(rawdata).split(",");
                 try {
-                    clicks = Long.parseLong(data[0]);
+                    clicks = Double.parseDouble(data[0]);
                 } catch (IndexOutOfBoundsException | NumberFormatException e) {
                     clicks = 0;
                 }
@@ -105,7 +137,7 @@ public class Main implements WindowListener, MouseListener, ComponentListener {
                     fails = 0;
                 }
                 try {
-                    highScore = Long.parseLong(data[3]);
+                    highScore = Double.parseDouble(data[3]);
                     if (highScore < clicks) {
                         clicks = 0;
                         highScore = 0;
@@ -116,6 +148,15 @@ public class Main implements WindowListener, MouseListener, ComponentListener {
                 } catch (IndexOutOfBoundsException | NumberFormatException e) {
                     highScore = 0;
                 }
+                try {
+                    inflation = Double.parseDouble(data[4]);
+                } catch (IndexOutOfBoundsException | NumberFormatException e) {
+                    inflation = 1;
+                }
+                try {
+                    if (data[5].equalsIgnoreCase("ELIAS IS WATCHING"))
+                        eliasOn();
+                } catch (IndexOutOfBoundsException e) {}
             }
         } catch (IOException e) {
             JOptionPane.showMessageDialog(null, "Cannot Access Save Data", "sadness", JOptionPane.ERROR_MESSAGE);
@@ -130,16 +171,66 @@ public class Main implements WindowListener, MouseListener, ComponentListener {
     private void save(boolean includeClicks) {
         try (FileWriter fw = new FileWriter(file)) {
             if (includeClicks) {
-                fw.write(clicks + "," + timeElapsed + "," + fails + "," + highScore + ",");
+                fw.write(clicks + "," + timeElapsed + "," + fails + "," + highScore + "," + inflation + "," + ((true_elias_mode)? "ELIAS IS WATCHING" : "") + ",");
                 fw.close();
                 fileClicks = clicks;
             } else {
-                fw.write(fileClicks + "," + timeElapsed + "," + fails + "," + highScore + ",");
+                fw.write(fileClicks + "," + timeElapsed + "," + fails + "," + highScore + "," + inflation + "," + ((true_elias_mode)? "ELIAS IS WATCHING" : "") + ",");
                 fw.close();
             }
         } catch (IOException e) {
             JOptionPane.showMessageDialog(null, "Cannot Access Save Data", "sadness", JOptionPane.ERROR_MESSAGE);
             System.exit(-1);
+        }
+    }
+
+    private File cat_file, elias_file;
+
+    private void loadCat() {
+        try {
+            WebClient client = new WebClient(BrowserVersion.CHROME);
+            client.getOptions().setCssEnabled(false);
+            client.getOptions().setAppletEnabled(false);
+            client.getOptions().setJavaScriptEnabled(false);
+            client.getOptions().setTimeout(5000);
+            int number = Integer.parseInt(((TextPage) client.getPage("https://raw.githubusercontent.com/Canary-Prism/SadnessClicker/main/cats.csv")).getContent());
+
+            UnexpectedPage image_page = client.getPage("https://raw.githubusercontent.com/Canary-Prism/SadnessClicker/main/cat" + (int)(Math.random() * (double) number) + ".jpg");
+            InputStream image_stream = image_page.getInputStream();
+            cat_file = new File(workingDirectory + "/SadnessCatClicker.jpg");
+            FileUtils.copyInputStreamToFile(image_stream, cat_file);
+            cat_file.deleteOnExit();
+        } catch (Exception e) {
+            String message = "";
+            for (StackTraceElement ste : e.getStackTrace()) {
+                message += "\n" + ste.toString();
+            }
+            JOptionPane.showMessageDialog(null, "Failed loading some assets: \n\"" + e + "\n" + message + "\"\nThis isn't strictly required so i'm ignoring this error", "What?", JOptionPane.ERROR_MESSAGE);
+            cat_file = null;
+        }
+    }
+
+    private void loadElias() {
+        try {
+            WebClient client = new WebClient(BrowserVersion.CHROME);
+            client.getOptions().setCssEnabled(false);
+            client.getOptions().setAppletEnabled(false);
+            client.getOptions().setJavaScriptEnabled(false);
+            client.getOptions().setTimeout(5000);
+            int number = Integer.parseInt(((TextPage) client.getPage("https://raw.githubusercontent.com/Canary-Prism/SadnessClicker/main/Elias.csv")).getContent());
+
+            UnexpectedPage image_page = client.getPage("https://raw.githubusercontent.com/Canary-Prism/SadnessClicker/main/Elias" + (int)(Math.random() * (double) number) + ".jpg");
+            InputStream image_stream = image_page.getInputStream();
+            elias_file = new File(workingDirectory + "/SadnessEliasClicker.jpg");
+            FileUtils.copyInputStreamToFile(image_stream, elias_file);
+            elias_file.deleteOnExit();
+        } catch (Exception e) {
+            String message = "";
+            for (StackTraceElement ste : e.getStackTrace()) {
+                message += "\n" + ste.toString();
+            }
+            JOptionPane.showMessageDialog(null, "Failed loading some assets: \n\"" + e + "\n" + message + "\"\nThis isn't strictly required so i'm ignoring this error", "What?", JOptionPane.ERROR_MESSAGE);
+            elias_file = null;
         }
     }
 
@@ -285,9 +376,38 @@ public class Main implements WindowListener, MouseListener, ComponentListener {
         frame.setSize(420, Main.CHANGELOG.length * 30 + 160);
     }
 
+    private void catsOn() {
+        dud.setIcon(new ImageIcon(new ImageIcon(cat_file.getAbsolutePath()).getImage().getScaledInstance(500, 500, Image.SCALE_SMOOTH)));
+        cat_mode = true;
+    }
+
+    private void catsOff() {
+        if (true_elias_mode)
+            return;
+        dud.setIcon(null);
+        cat_mode = false;
+    }
+
+    private void eliasOn() {
+        catsOff();
+        aboutLabel.setText("<html>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA<br />IT NEVER ENDS<br /><br />THE COMMUNIST UPRISING<br />WE WILL OVERTHROW THE CAPITALIST GOVERNMENT</html>");
+        versionLabel.setText("e̷͍͕͍̮͒̒͆̿͂̀̇̋͜͠l̸̫͍̼̏͋̇̊̎͝͠͝ȋ̷͎͔͕̟̤̭̮̫̪͎̬̬̥̜a̸͍̩̞̠͕̬̐̾̎̈͘s̴̲͍̙͉̉");
+        frame.setTitle("THE COMMUNIST UPRISING");
+        inflation = 3.141592653589793238462643383279;
+        dud.setIcon(new ImageIcon(new ImageIcon(elias_file.getAbsolutePath()).getImage().getScaledInstance(500, 500, Image.SCALE_SMOOTH)));
+        aboutButton.setText("AAAAA");
+        clicks = 0;
+        elias_mode = false;
+        true_elias_mode = true;
+    }
+
     @Override
     public void mousePressed(MouseEvent e) {
         if (!SwingUtilities.isLeftMouseButton(e) && (e.getSource() == clickButton || e.getSource() == aboutButton)) {
+            if (elias_mode)
+                return;
+
+            catsOff();
             clicks = 0;
             fails++;
             failsLabel.setText("Number of slip-ups: " + fails);
@@ -298,14 +418,38 @@ public class Main implements WindowListener, MouseListener, ComponentListener {
             return;
         }
         if (e.getSource() == clickButton) {
-            clicks++;
-            highLabel.setText("High Score: " + highScore);
+            if (clicks >= 0)
+                clicks += inflation;
+
+            if (elias == 20 && !true_elias_mode) {
+                aboutButton.setText("Elias");
+                elias_mode = true;
+            }
+            highLabel.setText("High Score: " + String.format("%.1f", highScore) + "0");
             if (highScore < clicks) {
                 highScore = clicks;
-                highLabel.setText("High Score: " + highScore + ":D");
+                highLabel.setText("High Score: " + String.format("%.1f", highScore) + "0 :D");
             }
-            clicksLabel.setText("Number of clicks: " + clicks);
+            clicksLabel.setText("Number of clicks: " + String.format("%.1f", clicks) + "0");
             wrongLabel.setText("good job");
+
+            if (cat_mode)
+                inflation -= 0.001;
+            if (clicks >= 1000 && !cat_mode) {
+                wrongLabel.setText("WOO HOO! 1000 CLICKS!!!!! :3");
+                catsOn();
+            }
+
+            if (clicks < 0) {
+                elias++;
+                wrongLabel.setText("what happened??");
+                clicksLabel.setText("Number of clicks: EEEEEEEEE");
+            }
+
+            if (true_elias_mode) {
+                wrongLabel.setText("HEHEHEHEHEHE");
+            }
+
 
             switch ((int)(Math.random() * 10)) {
                 case 0 -> 
@@ -321,6 +465,9 @@ public class Main implements WindowListener, MouseListener, ComponentListener {
                 clickButton.setLocation(225, 225);
         }
         if (e.getSource() == wrongButton) {
+            if (elias_mode)
+                return;
+            catsOff();
             clicks = 0;
             fails++;
             failsLabel.setText("Number of slip-ups: " + fails);
@@ -329,8 +476,14 @@ public class Main implements WindowListener, MouseListener, ComponentListener {
             wrongLabel.setText("<html><h2>Welp. your clicks are now reset</h2><br />next time remember to not click here</html>");
             save();
         }
-        if (e.getSource() == aboutButton) 
-            showAboutMenu();
+        if (e.getSource() == aboutButton) {
+            if (!elias_mode) 
+                showAboutMenu();
+            else {
+                aboutButton.setText("AAAAA");
+                eliasOn();
+            }
+        }
         if (e.getSource() == backButton) {
             frame.setResizable(false);
             showMain();
@@ -351,7 +504,7 @@ public class Main implements WindowListener, MouseListener, ComponentListener {
                 wrongLabel.setText("<html><h1>Saving...</h1> or not...<br />it cost <b>100</b> click points!<br />Lucky!!</html>");
                 clicks = (clicks >= 100)? clicks - 100 : 0;
             }
-            clicksLabel.setText("Number of clicks: " + clicks);
+            clicksLabel.setText("Number of clicks: " + String.format("%.1f", clicks) + "0");
             if (Math.random() > 0.3)
                 save();
         }
@@ -359,10 +512,14 @@ public class Main implements WindowListener, MouseListener, ComponentListener {
 
     @Override
     public void windowClosing(WindowEvent e) {
-        frame.dispose();
-        save(false);
-        JOptionPane.showMessageDialog(null, "Until next time ;D");
-        System.exit(0);
+        if (!true_elias_mode) {
+            frame.dispose();
+            save(false);
+            JOptionPane.showMessageDialog(null, "Until next time ;D");
+            System.exit(0);
+        } else {
+            JOptionPane.showMessageDialog(null, "WRONG AGAIN", "e̷͍͕͍̮͒̒͆̿͂̀̇̋͜͠l̸̫͍̼̏͋̇̊̎͝͠͝ȋ̷͎͔͕̟̤̭̮̫̪͎̬̬̥̜a̸͍̩̞̠͕̬̐̾̎̈͘s̴̲͍̙͉̉", JOptionPane.PLAIN_MESSAGE);
+        }
     }
 
     @Override

@@ -46,3 +46,6 @@ This program uses Java, you should download and install Java Development Kit (JD
 ### 2.0
 * added a new field: HIGH SCORES :D
 * now you can see what score you once got and get depressed :3
+### 3.0
+* added Cats
+* added Elias Inflation :3
