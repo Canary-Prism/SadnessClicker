@@ -384,6 +384,7 @@ public class Main implements WindowListener, MouseListener, ComponentListener {
     private void catsOff() {
         if (true_elias_mode)
             return;
+        
         dud.setIcon(null);
         cat_mode = false;
     }
