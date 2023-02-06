@@ -37,10 +37,9 @@ import com.gargoylesoftware.htmlunit.WebClient;
 
 public class Main implements WindowListener, MouseListener, ComponentListener {
 
-    public static final String VERSION = "3.0";
+    public static final String VERSION = "3.1";
     public static final String[] CHANGELOG = {
-        "Added Cats",
-        "Added Elias Inflation :3"
+        "Elias is now forever"
     };
 
     public static final int ROOM = 20;

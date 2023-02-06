@@ -49,3 +49,5 @@ This program uses Java, you should download and install Java Development Kit (JD
 ### 3.0
 * added Cats
 * added Elias Inflation :3
+### 3.1
+* Elias is now forever
