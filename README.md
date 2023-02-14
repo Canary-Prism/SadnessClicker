@@ -1,7 +1,8 @@
 # SadnessClicker
-Causes or worsens your depression, may cause severe rage, non-zero chance of exploded kidneys
 
-in any case, click the "Click" button and you'll be good :D
+Click away your sadness!\*
+
+<sub><sub>\*Scientifically proven to be inaccurate, we take no responsibility for spontaneous spleen combustion, it is possible for one to have a severe allergic reaction leading to the inability to press the space bar without incredible neck pain. Select test subjects have reported symptoms of heartburn, we told them it's because they drank drain cleaner but they insist otherwise. cats and trans programmers find the source code to be repulsive to the point where there is at least one instance where one of them died of the unbelievable stench and we had to rush them to the ER. Despite all of this, this tool will not intentionally pose any harm towards the device it's running on, every adverse effect on computer hardware is garunteed to the effect of you aggressively smashing your computer screen after a misclick. The points that you earn through this game carry no meaningful value but is nonetheless subject to inflation and supply and demand fluctuation. There is more to this game than it initially seems but, be warned, *you don't play this game, **this game plays you***</sub></sub>
 
 ### [Download](https://github.com/Canary-Prism/SadnessClicker/releases/)
 
