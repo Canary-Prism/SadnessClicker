@@ -52,3 +52,5 @@ This program uses Java, you should download and install Java Development Kit (JD
 * added Elias Inflation :3
 ### 3.1
 * Elias is now forever
+### 3.2
+* Added Elias to the closen't screen

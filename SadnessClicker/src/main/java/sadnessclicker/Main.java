@@ -37,9 +37,9 @@ import com.gargoylesoftware.htmlunit.WebClient;
 
 public class Main implements WindowListener, MouseListener, ComponentListener {
 
-    public static final String VERSION = "3.1";
+    public static final String VERSION = "3.2";
     public static final String[] CHANGELOG = {
-        "Elias is now forever"
+        "Added Elias to the closen't screen"
     };
 
     public static final int ROOM = 20;
@@ -183,7 +183,7 @@ public class Main implements WindowListener, MouseListener, ComponentListener {
         }
     }
 
-    private File cat_file, elias_file;
+    private File cat_file, elias_file, wrong_again;
 
     private void loadCat() {
         try {
@@ -223,6 +223,12 @@ public class Main implements WindowListener, MouseListener, ComponentListener {
             elias_file = new File(workingDirectory + "/SadnessEliasClicker.jpg");
             FileUtils.copyInputStreamToFile(image_stream, elias_file);
             elias_file.deleteOnExit();
+
+            UnexpectedPage wrong_again_page = client.getPage("https://raw.githubusercontent.com/Canary-Prism/SadnessClicker/main/wrong_again.jpg");
+
+            wrong_again = new File(workingDirectory, "/SadnessWrongClicker.jpg");
+            FileUtils.copyInputStreamToFile(wrong_again_page.getInputStream(), wrong_again);
+            wrong_again.deleteOnExit();
         } catch (Exception e) {
             String message = "";
             for (StackTraceElement ste : e.getStackTrace()) {
@@ -518,7 +524,7 @@ public class Main implements WindowListener, MouseListener, ComponentListener {
             JOptionPane.showMessageDialog(null, "Until next time ;D");
             System.exit(0);
         } else {
-            JOptionPane.showMessageDialog(null, "WRONG AGAIN", "e̷͍͕͍̮͒̒͆̿͂̀̇̋͜͠l̸̫͍̼̏͋̇̊̎͝͠͝ȋ̷͎͔͕̟̤̭̮̫̪͎̬̬̥̜a̸͍̩̞̠͕̬̐̾̎̈͘s̴̲͍̙͉̉", JOptionPane.PLAIN_MESSAGE);
+            JOptionPane.showMessageDialog(null, "WRONG AGAIN", "e̷͍͕͍̮͒̒͆̿͂̀̇̋͜͠l̸̫͍̼̏͋̇̊̎͝͠͝ȋ̷͎͔͕̟̤̭̮̫̪͎̬̬̥̜a̸͍̩̞̠͕̬̐̾̎̈͘s̴̲͍̙͉̉", JOptionPane.PLAIN_MESSAGE, new ImageIcon(new ImageIcon(wrong_again.getAbsolutePath()).getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH)));
         }
     }
 
