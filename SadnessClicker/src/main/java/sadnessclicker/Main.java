@@ -308,11 +308,7 @@ public class Main implements WindowListener, MouseListener, ComponentListener {
             public void run() {
                 timeElapsed += 1;
                 timeLabel.setText(
-                    "Time you've wasted: " + 
-                    String.valueOf(TimeUnit.SECONDS.toDays(timeElapsed)) + ":" +
-                    String.valueOf(TimeUnit.SECONDS.toHours(timeElapsed) - ((TimeUnit.SECONDS.toDays(timeElapsed) *24))) + ":" +
-                    String.valueOf(TimeUnit.SECONDS.toMinutes(timeElapsed) - (TimeUnit.SECONDS.toHours(timeElapsed)* 60)) + ":" +
-                    String.valueOf(TimeUnit.SECONDS.toSeconds(timeElapsed) - (TimeUnit.SECONDS.toMinutes(timeElapsed) *60))
+                    "Time you've wasted: " + getTimeLabel(timeElapsed)
                 );
                 save(false);
             }
@@ -322,6 +318,15 @@ public class Main implements WindowListener, MouseListener, ComponentListener {
         executor.scheduleAtFixedRate(timerClock, 0, 1, TimeUnit.SECONDS);
 
         showMain();
+    }
+
+    private String getTimeLabel(long timeElapsed) {
+        long days = timeElapsed / 86400;
+        long hours = (timeElapsed / 3600) % 24;
+        long minutes = (timeElapsed / 60) % 60;
+        long seconds = timeElapsed % 60;
+
+        return "%02d:%02d:%02d:%02d".formatted(days, hours, minutes, seconds);
     }
 
     private void showMain() {
